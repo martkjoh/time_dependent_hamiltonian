@@ -1,0 +1,60 @@
+\documentclass{article}
+
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{amsmath}
+
+\title{Numerical simulation of time dependent hamiltonian}
+\author{Martin Johnsrud}
+
+\begin{document}
+
+\maketitle
+
+\section*{Parametres}
+
+    The 1D time dependent Schrödinger equation is given by
+
+    \begin{equation*}
+        \hat H \Psi(x, t) = i \hbar \pdv{t} \Psi(x, t), \quad \hat H = -\frac{\hbar}{2m}\pdv[2]{x} + V(x, t),
+    \end{equation*}
+
+    for some potential $V(x)$. However, it is cumbersom to walk with dimensonfull constants, especially numerically, when values for $\hbar$ in the si-system is of order $10^{-34}$. This can lead to inaccuracies when doing numerical simulations. But, by choosing some defining, problem-dependent sizes and grouping togheter the constants, this can be liminated by the introduction of dimensonless variables. We are going to be working with potentials which are infinit outside som local region, i.e. the boundary conditions $\psi(0>x>L) = 0$, so it is natural to choose the length of the potential, $L$, as a defining quantity. Noticing that
+
+    \begin{equation*}
+        \bigg[\frac{\hbar}{2 m L^2} \bigg] = \frac{\si{kg.m^2.s^{-1}}}{\si{kg.m^2}} = \si{s^{-1}},
+    \end{equation*}
+    we make the variable change
+    \begin{equation*}
+        \frac{\hbar}{2 m L^2}t \rightarrow t, \quad \frac{1}{L}x \rightarrow x.
+    \end{equation*}
+    This gives the new, dimensionless schrödinger equation
+    \begin{equation}
+        \hat H \Psi(x, t) = -i \pdv{t} \Psi(x, t), \quad \hat H = -\pdv[2]{x} + V(x, t),
+        \label{time_depend}
+    \end{equation}
+    where I have done the change $2mL/\hbar^2V(x, t) \rightarrow V(x, t)$. All sizes now is in units defined by the problem and the constants of the equation, and the new boundary condition is 
+    \begin{equation*}
+        \Psi(0>x>1) = 0.
+    \end{equation*}
+
+    \section*{Time independent problems}
+    Assuming, for now, that the potential is independent of time, we can get the time independent schrødinger equation from \eqref{time_depend} by separation of variables. Assuming $\Psi(x, t) = \psi(x)\phi(t)$  yields the time independent schrödinger equation and the equation for the time dependence:
+    \begin{equation}
+        \bigg[-\pdv[2]{x} + V(x) \bigg] \psi(x) = \hat H \psi = E \psi(x), \quad \pdv{t}\phi(t) = -iE\phi(t).
+    \end{equation}
+    The equation for time is elematary, and gives the solution
+    \begin{equation*}
+        \phi(t) = \exp(-iEt).
+    \end{equation*}
+    The time independent schrödinger equation is a eigenvalue problem, and can be solved by discretizing the hamiltonian, and thus also $\psi$. We are first going to look at a particle in a box, i.e. $V(0<x<1) = 0$. The euqaion to discretize is thus
+    \begin{equation*}
+        \pdv[2]{x}\psi(x) = E \psi(x).
+    \end{equation*}
+    Using a finite difference scheme with $N$, this becomes a matrix equation,
+    \begin{equation*}
+        D \psi_n = E_n \psi_n, \quad D_{ii} = -2(N-1)^2, D_{ii\pm1} = (N-1)^2.
+    \end{equation*}
+    This has automatically built in the boundary conditions, as $D_{10}$ and $D_{NN+1}$ does not exist, and is thus not included.
+
+\end{document}
