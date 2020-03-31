@@ -3,9 +3,15 @@
 \usepackage{physics}
 \usepackage{siunitx}
 \usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{graphicx}
 
-\title{Numerical simulation of time dependent hamiltonian}
+\graphicspath{{./figs/}}
+
+
+\title{Simulation of time dependent hamiltonian}
 \author{Martin Johnsrud}
+\date{}
 
 \begin{document}
 
@@ -51,10 +57,32 @@
     \begin{equation*}
         \pdv[2]{x}\psi(x) = E \psi(x).
     \end{equation*}
-    Using a finite difference scheme with $N$, this becomes a matrix equation,
+    Using a finite difference scheme with $N + 1$ nodes, there will be $N-1$ possibly non-zero nodes. The end node are given by the boundary conditions $\psi(0) = \psi(1) = 0$, and the interior points are given by the matrix equation
     \begin{equation*}
-        D \psi_n = E_n \psi_n, \quad D_{ii} = 2(N-1)^2, D_{ii\pm1} = -(N-1)^2.
+        D \psi_n = E_n \psi_n, \quad D_{ii} = 2N^2, D_{ii\pm1} = -N^2.
     \end{equation*}
-    This has automatically built in the boundary conditions, as $D_{10}$ and $D_{NN+1}$ does not exist, and is thus not included.
+    Here, $\psi_n$ is a vector such that $\psi_n^{(j)} = \psi_n\big((j+1)/N\big)$. This is shown in the figure below.
+
+    \vspace{10pt}
+    \begin{tikzpicture}
+        \centering
+        \filldraw
+        (0, 0) circle (0.1) node[align=center, above] {$\psi_n^{(0)} = 0$}--
+        (2, 0) circle (0.1) node[align=center, above] {$\psi_n^{(1)}$}--
+        (4, 0) circle (0.1) node[align=center, above] {\dots} --
+        (6, 0) circle (0.1) node[align=center, above] {$\psi_n^{(N)}$}--
+        (8, 0) circle (0.1) node[align=center, above] {$\psi_n^{(N+1)} = 0$};
+    \end{tikzpicture}
+    \vspace{10pt}
+
+    The result of the simulation, togheter with the analytical solution, is shown i figure \ref{fig:particel in box}. The normalization is such that the sum ${\psi_n^{j}}^\dagger\psi_n^{j} = 1$ holds.
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.49\textwidth]{particle_in_box/vector_N=10}
+        \includegraphics[width=0.49\textwidth]{particle_in_box/vector_N=100}
+        \caption{The numerical simulation and analytical solution to a prticle in a box}
+        \label{fig:particel in box}
+    \end{figure}
 
 \end{document}
