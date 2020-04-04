@@ -16,3 +16,17 @@ function make_H0(N, V)
 
     return sparse(I, J, H)
 end
+
+function inner(u, v)
+    return conj(u)' * v
+end
+
+function check_ortho(v, n)
+    inners = Array{Float64}(undef, (n, n))
+    for i in 1:n
+        for j in 1:n
+            inners[i, j] = inner(v[:, i], v[:, j])
+    end end
+
+    print(inners)
+end

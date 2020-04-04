@@ -116,4 +116,11 @@ function particle_in_box()
     ns = [1, 5, 10]
     N = 50
     plot_error(N, ns)
+
+    N = 100
+    nev = 5
+    V(x) = 0*x
+    H = make_H0(N, V)
+    l, v = eigs(H, nev = nev)
+    check_ortho(v, 5)
 end

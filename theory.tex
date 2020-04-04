@@ -61,10 +61,10 @@
     \begin{equation*}
         D \psi_n = E_n \psi_n, \quad D_{ii} = 2N^2, D_{ii\pm1} = -N^2.
     \end{equation*}
-    Here, $\psi_n$ is a vector such that $\psi_n^{(j)} = \psi_n\big((j+1)/N\big)$. This is shown in the figure below.
+    Here, $\psi_n$ is a vector such that $\psi_n^{(j)} = \psi_n\big((j+1)/N\big)$. This is shown in the figure \ref{fig:nodes}
 
-    \vspace{10pt}
-    {\centering
+\begin{figure}
+    \centering
     \begin{tikzpicture}
         \filldraw
         (0, 0) circle (0.1) node[align=center, above] {$\psi_n^{(0)} = 0$}--
@@ -73,8 +73,8 @@
         (6, 0) circle (0.1) node[align=center, above] {$\psi_n^{(N)}$}--
         (8, 0) circle (0.1) node[align=center, above] {$\psi_n^{(N+1)} = 0$};
     \end{tikzpicture}
-    }
-    \vspace{10pt}
+    \label{fig:nodes}
+\end{figure}
 
     The result of the simulation, togheter with the analytical solution, is shown in figure \ref{fig:particel in box}. The normalization is such that the sum ${\psi_n^{j}}^\dagger\psi_n^{j} = 1$ holds. The analytical solution for the eiegenvalues are $E_n = (n \pi)^2$. By the finite nature of this simulation, the values are going to be less accurate for the higher energies, as they are waves where the wave length is short, and is aproaching the resolution of the discretization. Figure \ref{eigenvalues} shows the numerically computed eigenvalues, and compares them to the analytical solution. We see the error always wil increas rapidly for higher values, but we also get rapidly more accurate values by increasing $N$, i.e. decreasing the steplenght $\Delta x = 1 / N$. In figure \ref{errors}, we can se the trend of the error as the stepsize decrease. It is evident that the error decreases as the square of the steplength, or the inverse of the square of the number of points.
 
@@ -99,5 +99,12 @@
         \caption{The errors for some of the few first eigenvalues, compared to the square of the steplength}
         \label{errors}
     \end{figure}
+
+    A straight forward way to implement the inner product of this discretizised eigenvectors are the usual inner product, 
+    \begin{equation*}
+        \bra{\psi} \ket{\phi} = \sum_i \psi^\dagger_i \phi_i.
+    \end{equation*}
+    This fits togheter with the normalization chosen earlier. The eigenvectors should be orthonormal, which they ar, up to about a factor $10^{-15}$.
+
 
 \end{document}
