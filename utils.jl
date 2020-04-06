@@ -18,15 +18,62 @@ function make_H0(N, V)
 end
 
 function inner(u, v)
-    return conj(u)' * v
+    return dot(conj(u)', v)
 end
+
 
 function check_ortho(v, n)
     inners = Array{Float64}(undef, (n, n))
     for i in 1:n
         for j in 1:n
             inners[i, j] = inner(v[:, i], v[:, j])
-    end end
-
+        end
+    end
     print(inners)
 end
+
+
+function f(l, V0)
+    k = sqrt(l)
+    kappa = sqrt(V0 - l)
+    core_p = (kappa*sin(k/3) + k*cos(k/3))^2
+    core_m = (kappa*sin(k/3) - k*cos(k/3))^2
+    return exp(kappa/3)*core_p - exp(-kappa/3)*core_m
+end
+
+
+function secant(x1, x2, f, V0, tol=1e-10)
+    n = 1
+    while true
+        if x2>=V0 return V0 end
+        if x2<=0 return 0 end
+        f1 = f(x1, V0); f2 = f(x2, V0)
+        if abs(f2)<tol return Float64(x2) end
+        xnew = x2 - (f2 * (x2 - x1)) / (f2 - f1)
+        x1 = x2; x2 = xnew
+    end
+end
+
+
+function roots(f, dx, V0)
+    x = [0, dx, dx+1]
+    roots = []
+    while true
+        # We want to walk downward before starting secant
+        n = 1
+        while true
+            fs = f.(x, V0)
+            if fs[2]<fs[1] && fs[2]<fs[3] break end
+            x = dx .+ x
+            if x[3]>=V0 return roots end
+        end
+        # Know there are two roots near bottom
+        append!(roots, secant(x[1], x[2], f, V0))
+        # "heuristic", also known as a hack. For low V0
+        while f(x[3], V0)<0 && x[3]+dx<V0 x.+=dx end
+        append!(roots, secant(x[2], x[3], f, V0))
+        x = x .+ 1.
+        if x[3]>=V0 return roots end
+    end
+end
+
