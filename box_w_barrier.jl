@@ -91,4 +91,26 @@ function plot_time_evolve1(V0)
 end
 
 
-plot_num_roots()
+function plot_timesteps(method)
+    N = 1000
+    dt = 0.000001
+    T = 10*dt
+    V0 = 1e2
+    nev = 1
+
+    H = make_H0(N, x->V(x, V0))
+    l, v = eigs(H, nev=nev, which=:SM)
+    v0 = v
+    x = LinRange(1/N, 1-1/N, N-1)
+    for i in 1:10
+        v = method(v, H, T, dt)
+        fig, ax = subplots()
+        plot(x, abs.(v).^2)
+        plot(x, abs.(v0).^2, "--")
+        sleep(1)
+        close(fig)
+    end
+end
+
+# plot_timesteps(euler)
+plot_timesteps(pade)

@@ -77,3 +77,26 @@ function roots(f, dx, V0)
     end
 end
 
+
+function euler(v, H, T, dt)
+    steps = ceil(Int, T/dt)
+    I = sparse(diagm(ones(size(v)[1])))
+    H1 = I .- 1im*dt*H
+    for i in 1:steps
+        v = H1*v
+    end
+    return v
+end
+
+
+function pade(v, H, T, dt)
+    steps = ceil(Int, T/dt)
+    N = size(v)[1]
+    I = sparse(diagm(ones(N)))
+    H1 = I-1im/2*H*dt
+    H2 = inv(Matrix(I+1im/2*H*dt))
+    for i in 1:steps
+        v = H2*(H1*v)
+    end
+    return v
+end
