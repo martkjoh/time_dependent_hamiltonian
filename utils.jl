@@ -6,7 +6,7 @@ function make_H0(N, V)
     I = Array{Int}(undef, 3*(N-1) - 2)
     J = Array{Int}(undef, 3*(N-1) - 2)
     H = Array{Float64}(undef, 3*(N-1) - 2)
-    x = LinRange(0, 1, N-1)
+    x = LinRange(1/N, 1-1/N, N-1)
 
     I[1:3:end] = J[1:3:end] = 1:N-1     # Diagonal
     I[2:3:end] = J[3:3:end] = 1:N-2     # To the right (ii+1)
