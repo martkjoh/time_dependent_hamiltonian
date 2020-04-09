@@ -1,5 +1,6 @@
 using SparseArrays
 using Arpack
+using LinearAlgebra
 
 function make_H0(N, V)
 
@@ -16,6 +17,17 @@ function make_H0(N, V)
 
     return sparse(I, J, H)
 end
+
+
+function get_eigs(H, nev)
+    l, v = eigs(H, nev=nev, which=:SM)
+    for i in 1:nev
+        # make shure all vectors start upwards
+        if v[2,i]-v[1,i]<0 v[:,i]*=-1 end
+    end
+    return l, v
+end
+
 
 function inner(u, v)
     return dot(conj(u)', v)

@@ -1,5 +1,6 @@
 using PyPlot
-using LinearAlgebra
+
+pygui(true)
 
 include("utils.jl")
 
@@ -69,23 +70,19 @@ function plot_num_roots()
 end
 
 
-function plot_time_evolve1(V0, N, nev)
+function plot_time_evolve1(V0, N)
     H = make_H0(N, x -> V(x, V0))
-    l, v = eigs(H, nev=nev, which=:SM)
+    l, v = eigs(H, nev=2, which=:SM)
     x = LinRange(1/N, 1-1/N, N-1)
     alpha = [1, 1]/sqrt(2)
     v0 = time_evolve(alpha, v, l, 0)
-    for i in 1:10
-        v_new = time_evolve(alpha, v, l, i/10*pi/(l[1] - l[2])) 
-        fig, ax = subplots()
-        ax.plot(x, V(x, V0))
-        ax2 = ax.twinx()
-        ax2.plot(x, abs.(v0).^2)
-        ax2.plot(x, abs.(v_new).^2, "--")
-        show()
-        sleep(0.6)
-        close(fig)
-    end
+    v_new = time_evolve(alpha, v, l, pi/(l[1] - l[2])) 
+    fig, ax = subplots()
+    ax.plot(x, V(x, V0))
+    ax2 = ax.twinx()
+    ax2.plot(x, abs.(v0).^2)
+    ax2.plot(x, abs.(v_new).^2, "--")
+    show()
 end
 
 
@@ -97,7 +94,7 @@ function plot_timesteps(method)
     nev = 1
 
     H = make_H0(N, x->V(x, V0))
-    l, v = eigs(H, nev=nev, which=:SM)
+    l, v = get_eigs(H, nev)
     v0 = v
     x = LinRange(1/N, 1-1/N, N-1)
     for i in 1:10
@@ -111,7 +108,4 @@ function plot_timesteps(method)
 end
 
 
-V0 = Complex{Float64}(1e3)
-N = 100000
-nev = 6
-plot_time_evolve1(V0, N, nev)
+plot_time_evolve1(1e3, Int(1e5))
