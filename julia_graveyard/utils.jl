@@ -20,7 +20,7 @@ end
 
 
 function get_eigs(H, nev)
-    l, v = eigs(H, nev=nev, which=:SM)
+    l, v = eigs(H, nev=nev, which=:SM, tol=0)
     for i in 1:nev
         # make shure all vectors start upwards
         if v[2,i]-v[1,i]<0 v[:,i]*=-1 end

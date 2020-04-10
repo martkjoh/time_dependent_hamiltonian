@@ -6,8 +6,8 @@ include("utils.jl")
 
 function V(x, V0)
     N = size(x)[1]
-    V = zeros(N)
-    start = Int(round(N/3))
+    V = zeros(N)    
+    start = ceil(Int, N/3)
     num = Int(start*2-start)
     V[start:start+num-1] = V0*ones(num)
     return V
@@ -31,7 +31,8 @@ function plot_eigenvals(N, l, nev)
     show()
 end
 
-function time_evolve(alpha, v, l, T)
+
+function time_evolve(v, l, T, alpha = [1])
     n = size(alpha)[1]
     evolve = alpha .* exp.(-1im*l[1:n]*T)
     v_new = zeros(size(v)[1])
@@ -75,14 +76,31 @@ function plot_time_evolve1(V0, N)
     l, v = eigs(H, nev=2, which=:SM)
     x = LinRange(1/N, 1-1/N, N-1)
     alpha = [1, 1]/sqrt(2)
-    v0 = time_evolve(alpha, v, l, 0)
-    v_new = time_evolve(alpha, v, l, pi/(l[1] - l[2])) 
+    v0 = time_evolve(v, l, 0, alpha)
+    v_new = time_evolve(v, l, pi/(l[1] - l[2]), alpha)
     fig, ax = subplots()
     ax.plot(x, V(x, V0))
     ax2 = ax.twinx()
     ax2.plot(x, abs.(v0).^2)
     ax2.plot(x, abs.(v_new).^2, "--")
     show()
+end
+
+
+function plot_wave_func(V0, N, nev)
+    H = make_H0(N, x -> V(x, V0))
+    l, v = get_eigs(H, nev)
+    x = LinRange(1/N, 1-1/N, N-1)
+    fig, ax = subplots()
+    ax.plot(x, V(x, V0))
+    ax2 = ax.twinx()
+    for i in 1:nev
+        print(l[i], "\n")
+        ax2.plot(x, v[:, i], label = "\$\\psi_$i\$")
+        ax2.legend()
+    end
+    savefig("figs/box_w_barrier/wave_func.png")
+    close(fig)
 end
 
 
@@ -107,5 +125,5 @@ function plot_timesteps(method)
     end
 end
 
-
-plot_time_evolve1(1e3, Int(1e5))
+plot_wave_func(1e3, Int(1e4), 4)
+print(roots(f, 0.1, 1e3))
