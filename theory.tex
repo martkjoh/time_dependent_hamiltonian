@@ -1,5 +1,7 @@
 \documentclass{article}
 
+\usepackage[left=2.5cm, right=2.5cm,top=2.5cm, bottom=3cm]{geometry}
+
 \usepackage{physics}
 \usepackage{siunitx}
 \usepackage{amsmath}
@@ -16,7 +18,9 @@
 \begin{document}
 
 \maketitle
-
+\begin{abstract}
+    this is an abstract
+\end{abstract}
 \section*{Parametres}
 
     The 1D time dependent Schrödinger equation is given by
@@ -61,10 +65,9 @@
     \begin{equation*}
         D \psi_n = E_n \psi_n, \quad D_{ii} = 2N^2, D_{ii\pm1} = -N^2.
     \end{equation*}
-    Here, $\psi_n$ is a vector such that $\psi_n^{(j)} = \psi_n\big((j+1)/N\big)$. This is shown in the figure \ref{fig:nodes}
+    Here, $\psi_n$ is a vector such that $\psi_n^{(j)} = \psi_n\big((j+1)/N\big)$. This is shown in the figure bleow.
 
-\begin{figure}
-    \centering
+    \begin{center}
     \begin{tikzpicture}
         \filldraw
         (0, 0) circle (0.1) node[align=center, above] {$\psi_n^{(0)} = 0$}--
@@ -73,12 +76,11 @@
         (6, 0) circle (0.1) node[align=center, above] {$\psi_n^{(N)}$}--
         (8, 0) circle (0.1) node[align=center, above] {$\psi_n^{(N+1)} = 0$};
     \end{tikzpicture}
-    \label{fig:nodes}
-\end{figure}
+    \end{center}
 
     The result of the simulation, togheter with the analytical solution, is shown in figure \ref{fig:particel in box}. The normalization is such that the sum ${\psi_n^{j}}^\dagger\psi_n^{j} = 1$ holds. The analytical solution for the eiegenvalues are $E_n = (n \pi)^2$. By the finite nature of this simulation, the values are going to be less accurate for the higher energies, as they are waves where the wave length is short, and is aproaching the resolution of the discretization. Figure \ref{eigenvalues} shows the numerically computed eigenvalues, and compares them to the analytical solution. We see the error always wil increas rapidly for higher values, but we also get rapidly more accurate values by increasing $N$, i.e. decreasing the steplenght $\Delta x = 1 / N$. In figure \ref{errors}, we can se the trend of the error as the stepsize decrease. It is evident that the error decreases as the square of the steplength, or the inverse of the square of the number of points.
 
-    \begin{figure}[h]
+    \begin{figure}
         \centering
         \includegraphics[width=0.49\textwidth]{particle_in_box/vector_N=10}
         \includegraphics[width=0.49\textwidth]{particle_in_box/vector_N=100}
@@ -86,14 +88,14 @@
         \label{fig:particel in box}
     \end{figure}
 
-    \begin{figure}[h]
+    \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{particle_in_box/values}
         \caption{The numerical eigenvalues, compared with the analytical solution.}
         \label{eigenvalues}
     \end{figure}
 
-    \begin{figure}[h]
+    \begin{figure}
         \centering
         \includegraphics[width = \textwidth]{particle_in_box/error}
         \caption{The errors for some of the few first eigenvalues, compared to the square of the steplength}

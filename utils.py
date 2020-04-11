@@ -17,6 +17,8 @@ def get_H_bands(N, V):
 def get_eig(N, V, nev):
     H1, H2 = get_H_bands(N, V)
     l, v = eigs(H1, H2, select="i", select_range=(0,nev-1))
+    for i in range(nev):
+        if v[1, i]-v[0, i]<0: v[:, i] *= -1
     return l, v
 
 def get_H(N, V):
