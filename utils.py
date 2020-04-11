@@ -2,7 +2,7 @@ import numpy as np
 from numpy import pi, exp, sin, cos, sqrt, abs, ceil
 from scipy.linalg import eigh_tridiagonal as eigs
 from scipy.sparse import csc_matrix, identity
-from scipy.sparse.linalg import inv
+from scipy.sparse.linalg import inv, splu
 
 
 def get_x(N):
@@ -72,19 +72,19 @@ def time_evolve(v, l, T, alpha=np.array([1])):
     C = alpha*exp(-1j*l[0:n]*T)
     return np.einsum("ij, j -> i", v, C)
 
-def time_evolve_step(A, v, num_steps):
-    for i in range(num_steps):
-        v = A@v
-    return v
-
 def euler_step(N, V, dt):
     H = get_H(N, V)
-    I = identity(N-1)
+    I = identity(N-1, format="csc")
     return I - 1j*dt*H
 
 def pade_step(N, V, dt):
     H = get_H(N, V)
     I = identity(N-1, format="csc")
     H1 =  I-1j/2*dt*H
-    H2 = inv(I+1j/2*dt*H)
+    A = I+1j/2*dt*H
+    # lu = splu(lve(I.todense())
+    H2 = inv(A)
     return H2@H1
+
+def inner(u, v):
+    return np.dot(np.conj(u), v)
