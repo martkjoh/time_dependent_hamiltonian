@@ -88,3 +88,15 @@ def pade_step(N, V, dt):
 
 def inner(u, v):
     return np.dot(np.conj(u), v)
+
+def get_tau(N, l0, v0, V_Vr, Vr):
+    H = get_H(N, lambda x: V_Vr(x, Vr))
+    return inner(v0[:, 0], H@v0[:, 1])
+
+def get_H_eff(N, l0, v0, V_Vr, Vr):
+    tau = get_tau(N, l0, v0, V_Vr, Vr)
+    eps = l0[1] - l0[0]
+    return np.array([
+        [-eps/2, tau],
+        [tau, eps/2]
+    ])
