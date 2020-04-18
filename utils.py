@@ -1,8 +1,9 @@
 import numpy as np
 from numpy import pi, exp, sin, cos, sqrt, abs, ceil
+from numpy.linalg import solve
 from scipy.linalg import eigh_tridiagonal as eigs
 from scipy.sparse import csc_matrix, identity
-from scipy.sparse.linalg import inv, splu
+from scipy.sparse.linalg import inv
 
 
 def get_x(N):
@@ -81,9 +82,7 @@ def pade_step(N, V, dt):
     H = get_H(N, V)
     I = identity(N-1, format="csc")
     H1 =  I-1j/2*dt*H
-    A = I+1j/2*dt*H
-    # lu = splu(lve(I.todense())
-    H2 = inv(A)
+    H2 = inv(I+1j/2*dt*H)
     return H2@H1
 
 def inner(u, v):
@@ -100,3 +99,35 @@ def get_H_eff(N, l0, v0, V_Vr, Vr):
         [-eps/2, tau],
         [tau, eps/2]
     ])
+
+def get_HI(N, tau, T):
+    t = np.linspace(0, T, N)
+    a = tau*sin(t)
+    H = np.array([
+        [np.zeros(N), exp(-1j*t)*a],
+        [exp(+1j*t)*a, np.zeros(N)], 
+    ])
+    return np.moveaxis(H, -1, 0)
+
+def solve_psi(v0, N, H, dt):
+    v = np.zeros((N, 2), dtype=np.complex_)
+    v[0] = v0
+
+    for k in range(1, N):
+        A = np.identity(2) - 1j*dt*H[k]
+        b = v0 - 1j*dt*np.einsum("kij, kj -> i", H[:k], v[:k])
+        v[k] = solve(A, b)
+
+    return v
+
+def get_psi_t(v0, N, T, tau):
+    dt = T/N
+    H = get_HI(N, tau, T)
+    return solve_psi(v0, N, H, dt)
+
+def get_prob(v0, N, T, tau):
+    v = get_psi_t(v0, N, T, tau)
+    p = np.empty(N)
+    for k in range(N):
+        p[k] = inner(v0, v[k])
+    return p

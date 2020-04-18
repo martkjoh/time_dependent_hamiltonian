@@ -48,7 +48,7 @@
         \Psi(0>x>1) = 0.
     \end{equation*}
 
-    \section*{Time independent problems}
+\section*{Time independent problems}
     Assuming, for now, that the potential is independent of time, we can get the time independent schrødinger equation from \eqref{time_depend} by separation of variables. Assuming $\Psi(x, t) = \psi(x)\phi(t)$  yields the time independent schrödinger equation and the equation for the time dependence:
     \begin{equation}
         \bigg[-\pdv[2]{x} + V(x) \bigg] \psi(x) = \hat H \psi = E \psi(x), \quad \pdv{t}\phi(t) = -iE\phi(t).
@@ -108,5 +108,25 @@
     \end{equation*}
     This fits togheter with the normalization chosen earlier. The eigenvectors should be orthonormal, which they ar, up to about a factor $10^{-15}$.
 
+\section*{Interaction Hamiltonian}
+    The exact solution of the interaction hamiltonian of the effective system
+    \begin{equation*}
+        \hat H(t) = 
+        \begin{pmatrix}
+            0 & \exp(-i \epsilon_0 t) \tau \sin(t)\\
+            \exp(i \epsilon_0 t) \tau \sin(t) & 0
+        \end{pmatrix}
+    \end{equation*}
+    is given by Volterra equation
+    \begin{equation*}
+        \ket{\psi(t)} = \ket{\psi(0)} - i\int_0^t \dd{t'} \hat H(t')\ket{\psi(t')}.
+    \end{equation*}
+    This is discretizised by use of the trapeziod rule,
+    \begin{align*}
+        \psi_i^l = \psi_i^0 - i \Delta t \sum_{k=0}^{l} \sum_{j=1}^2 H_{ij}^k \psi_j^k \\
+        \psi_i^l + i \Delta t H_{ij}^k \psi_i^l = \psi_i^0 - i \Delta t \sum_{k=0}^{l-1} \sum_{j=1}^2 H_{ij}^k \psi_j^k \\
+        A_{ij}^l = \delta_{ij} + i\Delta t H_{ij}^l, \quad b_i = \psi_i^0 - i \Delta t \sum_{k=0}^{l-1} \sum_{j=1}^2 H_{ij}^k \psi_j^k \\
+        A_{ij}^l \psi_j^l = b_i^l
+    \end{align*}
 
 \end{document}

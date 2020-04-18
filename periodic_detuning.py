@@ -1,14 +1,14 @@
 import numpy as np
-from numpy import ceil
+from numpy import ceil, sin
 from numpy.linalg import eig
 
 from plotting import *
-from utils import get_eig, get_H_eff, inner, get_x
+from utils import get_eig, get_H_eff, inner, get_x, get_prob
 
 FIG_PATH = "figs/periodic_detuning/"
 V0 = 1e2
 N = 10_000
-
+eps = 1
 
 def V(x, Vr, V0 = V0):
     n = len(x)
@@ -59,7 +59,6 @@ def plot_diff_vals(N, Vrs):
     ax.set_xlabel("$V_r/ [2mL/\hbar^2]$")
     plt.show()
 
-
 def plot_H_eff_vecs(N, Vrs):
     n = len(Vrs)
     fig, ax = plt.subplots(2)
@@ -81,8 +80,23 @@ def plot_H_eff_vecs(N, Vrs):
 
     plt.show()
 
+def plot_prob():
+    N = 2000
+    T = 500
+    tau = 0.02
+
+    l0, v0 = get_eig(N, lambda x: V(x, 0, 0), 2)
+    p = get_prob(v0[0], N, T, tau)
+
+    t = np.linspace(0, T, N)
+    plt.plot(t, p)
+    plt.plot(t, sin(t*tau/2)**2)
+    plt.show()
+
+
 Vrs = np.linspace(-10, 10, 51)
 
 # plot_vecs(N, 0)
-plot_diff_vals(N, Vrs)
+# plot_diff_vals(N, Vrs)
 # plot_H_eff_vecs(N, [-0.05])
+plot_prob()
