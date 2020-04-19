@@ -129,5 +129,5 @@ def get_prob(v0, N, T, tau):
     v = get_psi_t(v0, N, T, tau)
     p = np.empty(N)
     for k in range(N):
-        p[k] = inner(v0, v[k])
+        p[k] = abs(inner(v0, v[k]))**2
     return p

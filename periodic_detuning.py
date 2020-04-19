@@ -85,8 +85,9 @@ def plot_prob():
     T = 500
     tau = 0.02
 
-    l0, v0 = get_eig(N, lambda x: V(x, 0, 0), 2)
-    p = get_prob(v0[0], N, T, tau)
+    # l0, v0 = get_eig(N, lambda x: V(x, 0, 0), 2)
+    v0 = np.array([1, 0])
+    p = get_prob(v0, N, T, tau)
 
     t = np.linspace(0, T, N)
     plt.plot(t, p)
