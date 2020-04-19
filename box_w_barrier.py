@@ -5,6 +5,7 @@ from plotting import *
 from utils import get_eig, roots, f, get_x, time_evolve, pade_step, euler_step, inner
 
 FIG_PATH = "figs/box_w_barrier/"
+N = 10_000
 V0 = 1e3
 
 def V(x, V0 = V0):
@@ -14,16 +15,71 @@ def V(x, V0 = V0):
     V[m:2*m] = V0*np.ones(m)
     return V
 
-def plot_eigvecs(N, V, nev):
+def plot_eigvecs(N, nev):
     l, v = get_eig(N, V, nev)
-    fig, ax = plt.subplots()
     x = np.linspace(1/N, 1-1/N, N-1)
-    ax.plot(x, V(x))
-    ax2 = ax.twinx()
-    for i in range(nev):
-        ax2.plot(x, v[:, i].real, color=cm.viridis(i/nev))
 
-    plt.show()
+    fig, ax = plt.subplots(figsize=(12,5))
+    ax.plot(x, V(x), "--k")
+    ax.set_ylabel("$E / [2mL/\hbar^2]$")
+    ax.set_xlabel("$x / [L]$")
+    ax.set_title("$N={}$".format(N))
+    ax2 = ax.twinx()
+    ax2.set_ylabel("$\Psi / [1]$")
+
+    for i in range(nev):
+        ax2.plot(x, v[:, i].real, 
+        color=cm.viridis(i/nev),
+        label="$\\psi_{}$".format(i))
+
+    ax2.legend()
+    plt.savefig(FIG_PATH + "eigenvecs.pdf")
+
+def plot_eigvals(N, nev):
+    l, v = get_eig(N, V, nev)
+    n = np.arange(nev) + 1
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax.plot(n, l, "o")
+    ax.set_xlabel("$n$")
+    ax.set_ylabel("$E / [2mL/\hbar^2]$")
+    plt.savefig(FIG_PATH + "eigenvals.pdf")
+
+def plot_roots():
+    l = roots(f, 0.1, V0)
+    ls = np.linspace(0, V0, 1000)
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(ls, f(ls, V0),  label="$f(x)$")
+    ax.set_title("${}$ roots".format((len(l))))
+    ax.plot(ls, np.zeros_like(ls), "--k", lw=1)
+    ax.set_xlabel("$x / [2mL/\hbar^2]$")
+    ax.set_ylabel("$f(x)$")
+    for a in l:
+        leg = ax.plot(a, 0, "xk", ms=12)
+    plt.legend((leg), ("roots", ))
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(FIG_PATH + "roots.pdf")
+
+def plot_error(Ns):
+    l = roots(f, 0.1, V0)
+    nev = len(l)
+    n = np.arange(1, nev+1)
+    m = len(Ns)
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.set_xlabel("$n$")
+    ax.set_ylabel("$|E_i-x_i|/x_0$")
+    for i in range(m):
+        N = Ns[i]
+        l2, v = get_eig(N, V, nev)
+        ax.plot(n, abs((l-l2)/l[0]), "x", 
+            label="$N={}$".format(Ns[i]),
+            ms=12)
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(FIG_PATH + "roots_error.pdf")
 
 def plot_superpos(N):
     l, v = get_eig(N, lambda x:V(x, V0), 2)
@@ -69,31 +125,6 @@ def plot_time_evolve(N):
     plt.tight_layout()
     plt.savefig(FIG_PATH + "time_evolve.pdf")
 
-def plot_roots():
-    l = roots(f, 0.1, V0)
-    ls = np.linspace(0, V0, 1000)
-
-    fig, ax = plt.subplots()
-    ax.plot(ls, f(ls, V0))
-    ax.set_title("${}$ roots".format((len(l))))
-    ax.plot(ls, np.zeros_like(ls), "--")
-    for a in l:
-        ax.plot(a, 0, "x")
-    plt.show()
-
-def plot_error(Ns):
-    l = roots(f, 0.1, V0)
-    nev = len(l)
-    n = np.arange(1, nev+1)
-    m = len(Ns)
-
-    fig, ax = plt.subplots()
-    for i in range(m):
-        N = Ns[i]
-        l2, v = get_eig(N, V, nev)
-        ax.plot(n, abs((l-l2)/l[0]), "x")
-    plt.show()
-
 def plot_time_evolve_step_error(Ns, step, dts):
     fig, ax = plt.subplots()
     ax.set_yscale("log")
@@ -133,11 +164,15 @@ def plot_time_evolve_step(N, step, f, T, dt):
     plt.show()
     
 
-nev = 4
-# plot_superpos(N)
-# plot_time_evolve(N)
+nev = 8
+# plot_eigvecs(N, nev)
+
+# plot_eigvals(N, 12)
 # plot_roots()
 # plot_error([100, 1000, 10_000])
+
+# plot_superpos(N)
+# plot_time_evolve(N)
 # plot_time_evolve_step_error([1_000, 5_000], euler_step, [1e-6, 5e-6])
 # plot_time_evolve_step(1_000, pade_step, lambda x:-1/2*x**2+1/2*x, 1, 0.001)
 

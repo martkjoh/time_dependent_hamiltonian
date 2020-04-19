@@ -81,17 +81,16 @@ def plot_H_eff_vecs(N, Vrs):
     plt.show()
 
 def plot_prob():
-    N = 2000
-    T = 500
-    tau = 0.02
+    N = 20_000
+    T = 1_000
+    tau = 0.01
 
-    # l0, v0 = get_eig(N, lambda x: V(x, 0, 0), 2)
     v0 = np.array([1, 0])
     p = get_prob(v0, N, T, tau)
 
     t = np.linspace(0, T, N)
     plt.plot(t, p)
-    plt.plot(t, sin(t*tau/2)**2)
+    plt.plot(t, 1-sin(t*tau/2)**2, "--k")
     plt.show()
 
 

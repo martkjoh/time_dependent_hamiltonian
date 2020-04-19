@@ -4,7 +4,7 @@ from matplotlib import cm
 
 font = {'family' : 'serif', 
         'weight' : 'normal', 
-        'size'   : 11}
+        'size'   : 14}
 plt.rcParams['mathtext.fontset'] = 'cm'
 plt.rc("lines", lw=2)
 plt.rc('font', **font)

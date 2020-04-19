@@ -1,12 +1,14 @@
 \documentclass{article}
 
-\usepackage[left=2.5cm, right=2.5cm,top=2.5cm, bottom=3cm]{geometry}
+\usepackage[left=2.5cm, right=2.5cm,top=2.5cm, bottom=2.5cm]{geometry}
 
 \usepackage{physics}
 \usepackage{siunitx}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 \graphicspath{{./figs/}}
 
@@ -21,6 +23,7 @@
 \begin{abstract}
     this is an abstract
 \end{abstract}
+
 \section*{Parametres}
 
     The 1D time dependent Schrödinger equation is given by
@@ -53,19 +56,15 @@
     \begin{equation}
         \bigg[-\pdv[2]{x} + V(x) \bigg] \psi(x) = \hat H \psi = E \psi(x), \quad \pdv{t}\phi(t) = -iE\phi(t).
     \end{equation}
-    The equation for time is elematary, and gives the solution
-    \begin{equation*}
-        \phi(t) = \exp(-iEt).
-    \end{equation*}
-    The time independent schrödinger equation is a eigenvalue problem, and can be solved by discretizing the hamiltonian, and thus also $\psi$. We are first going to look at a particle in a box, i.e. $V(0<x<1) = 0$. The euqaion to discretize is thus
+    The equation for time is elematary, and gives the solution $\phi(t) = \exp(-iEt)$. The time independent schrödinger equation is a eigenvalue problem, and can be solved by discretizing the hamiltonian, and thus also $\psi$. 
     \begin{equation*}
         \pdv[2]{x}\psi(x) = E \psi(x).
     \end{equation*}
     Using a finite difference scheme with $N + 1$ nodes, there will be $N-1$ possibly non-zero nodes. The end node are given by the boundary conditions $\psi(0) = \psi(1) = 0$, and the interior points are given by the matrix equation
     \begin{equation*}
-        D \psi_n = E_n \psi_n, \quad D_{ii} = 2N^2, D_{ii\pm1} = -N^2.
+        H \psi_n = E_n \psi_n, \quad H_{ii} = 2N^2 + V_i, D_{ii\pm1} = -N^2.
     \end{equation*}
-    Here, $\psi_n$ is a vector such that $\psi_n^{(j)} = \psi_n\big((j+1)/N\big)$. This is shown in the figure bleow.
+    Here, $\psi_n$ is a vector such that $\psi_n^{(i)} = \psi_n\big((i+1)/N\big)$, and $V_i$ is the potential evaluated at that node. This is shown in the figure bleow.
 
     \begin{center}
     \begin{tikzpicture}
@@ -78,7 +77,8 @@
     \end{tikzpicture}
     \end{center}
 
-    The result of the simulation, togheter with the analytical solution, is shown in figure \ref{fig:particel in box}. The normalization is such that the sum ${\psi_n^{j}}^\dagger\psi_n^{j} = 1$ holds. The analytical solution for the eiegenvalues are $E_n = (n \pi)^2$. By the finite nature of this simulation, the values are going to be less accurate for the higher energies, as they are waves where the wave length is short, and is aproaching the resolution of the discretization. Figure \ref{eigenvalues} shows the numerically computed eigenvalues, and compares them to the analytical solution. We see the error always wil increas rapidly for higher values, but we also get rapidly more accurate values by increasing $N$, i.e. decreasing the steplenght $\Delta x = 1 / N$. In figure \ref{errors}, we can se the trend of the error as the stepsize decrease. It is evident that the error decreases as the square of the steplength, or the inverse of the square of the number of points.
+\subsection*{Particle in a box}
+    The method is first tested at a particle in a box, i.e. $V(0<x<1) = 0$. The result of the simulation, togheter with the analytical solution, is shown in figure \ref{fig:particel in box}. The normalization is such that the sum ${\psi_n^{j}}^\dagger\psi_n^{j} = 1$ holds. The analytical solution for the eiegenvalues are $E_n = (n \pi)^2$. By the finite nature of this simulation, the values are going to be less accurate for the higher energies, as they are waves where the wave length is short, and is aproaching the resolution of the discretization. Figure \ref{fig:eigenvalues} shows the numerically computed eigenvalues, and compares them to the analytical solution. We see the error always wil increas rapidly for higher values, but we also get rapidly more accurate values by increasing $N$, i.e. decreasing the steplenght $\Delta x = 1 / N$. In figure \ref{fig:errors}, we can se the trend of the error as the stepsize decrease. It is evident that the error decreases as the square of the steplength, or the inverse of the square of the number of points.
 
     \begin{figure}
         \centering
@@ -88,18 +88,19 @@
         \label{fig:particel in box}
     \end{figure}
 
-    \begin{figure}
+    \begin{figure}[ht]
+        \vspace{-1cm}
         \centering
         \includegraphics[width=\textwidth]{particle_in_box/values}
         \caption{The numerical eigenvalues, compared with the analytical solution.}
-        \label{eigenvalues}
+        \label{fig:eigenvalues}
     \end{figure}
 
-    \begin{figure}
+    \begin{figure}[ht]
         \centering
-        \includegraphics[width = \textwidth]{particle_in_box/error}
+        \includegraphics[width=\textwidth]{particle_in_box/error}
         \caption{The errors for some of the few first eigenvalues, compared to the square of the steplength}
-        \label{errors}
+        \label{fig:errors}
     \end{figure}
 
     A straight forward way to implement the inner product of this discretizised eigenvectors are the usual inner product, 
@@ -107,6 +108,56 @@
         \bra{\psi} \ket{\phi} = \sum_i \psi^\dagger_i \phi_i.
     \end{equation*}
     This fits togheter with the normalization chosen earlier. The eigenvectors should be orthonormal, which they ar, up to about a factor $10^{-15}$.
+
+\subsection*{A box with a barrier}
+    Next, we put a barrier in the middle of the potential,
+    \begin{equation*}
+        V(x) = 
+        \begin{cases}
+            0, & x \in (0, L/3] \cup [2L/3, L] \\
+            V_0, & x \in (L/3, 2L/3),
+        \end{cases}
+    \end{equation*}
+    with the same boundary conditions as before. We will first study the case of $V_0 = 1000$, as shown in \ref{fig:eigenvecs box w barrier}. We se there are 6 bound, the eigenvectors with positive curvature ove the barrier. These have the twin eigenvalues which are almost equal. However they are not exactly equal, as there can be no degenracy in 1D. These are, however, so close that they can be hard to calculate correctly. The bound values are given by the roots of
+    \begin{equation*}
+        f(\lambda) = \exp(\kappa/3)\bigg[\kappa \sin(k/3)+k \cos(k/3)\bigg]^2 - \exp(-\kappa/3)\bigg[\kappa \sin(k/3) - k \cos(k/3)\bigg]^2,
+    \end{equation*}
+    where $\kappa = \sqrt{\lambda}, \, k = \sqrt{V_0 - \lambda}$. To find these roots, we use the secant method, 
+    \begin{equation*}
+        x_{n+1} = x_{n} - f(x_{n}) \frac{x_{n-1} - x_{n-2}}{f(x_{n-1}) - f(x_{n-2})}.
+    \end{equation*}
+    However, as there are several roots, and some of them are very close, it is important to choose good starting values. We can exploit the shape of the graph to do this, as the pseudo code below showcases. This program finds the local minima of the function, and runs the secant method on starting points in the minima and just to the left, and in the minima and just to the right, finding the two almost degenerate roots.
+
+    \begin{algorithmic}
+    \vspace{0.5cm}
+    \State $x \gets [0, \dd x, 2 \dd x]$
+    \While{$x_2 < x_{max}$}
+        \While{$f(x_0) > f(x_1) < f(x_2) $}
+            \State $x \gets x + \dd{x}$
+        \EndWhile
+        \State $\mathrm{roots} \gets \mathrm{roots} \cup \mathrm{secant}(x_0, x_1)$
+        \State $\mathrm{roots} \gets \mathrm{roots} \cup \mathrm{secant}(x_1, x_2)$
+    \EndWhile
+    \end{algorithmic}
+
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.49\textwidth]{box_w_barrier/eigenvecs}
+        \includegraphics[width=0.49\textwidth]{box_w_barrier/eigenvals}
+        \caption{The first eigenvectors of box with a barrier si shown above, with the first few eivenvalues in the plot below.}
+        \label{fig:eigenvecs box w barrier}
+    \end{figure}
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=0.45\textwidth]{box_w_barrier/roots.pdf}
+        \includegraphics[width=0.45\textwidth]{box_w_barrier/roots_error.pdf}
+        \caption{The shape of the function $f(x)$, show to the left, makes it possible to effectivly choose starting points for the secant method. The error from computing eigenvalues is shown to the right}
+        \label{fig:eigenvals box w barrier}
+    \end{figure}
+
+\subsection*{Time evolution}
 
 \section*{Interaction Hamiltonian}
     The exact solution of the interaction hamiltonian of the effective system
@@ -121,7 +172,7 @@
     \begin{equation*}
         \ket{\psi(t)} = \ket{\psi(0)} - i\int_0^t \dd{t'} \hat H(t')\ket{\psi(t')}.
     \end{equation*}
-    This is discretizised by use of the trapeziod rule,
+    This is discretizised as a sum,
     \begin{align*}
         \psi_i^l = \psi_i^0 - i \Delta t \sum_{k=0}^{l} \sum_{j=1}^2 H_{ij}^k \psi_j^k \\
         \psi_i^l + i \Delta t H_{ij}^k \psi_i^l = \psi_i^0 - i \Delta t \sum_{k=0}^{l-1} \sum_{j=1}^2 H_{ij}^k \psi_j^k \\

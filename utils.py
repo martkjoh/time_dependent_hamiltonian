@@ -5,7 +5,6 @@ from scipy.linalg import eigh_tridiagonal as eigs
 from scipy.sparse import csc_matrix, identity
 from scipy.sparse.linalg import inv
 
-
 def get_x(N):
     return np.linspace(1/N, 1-1/N, N-1)
 

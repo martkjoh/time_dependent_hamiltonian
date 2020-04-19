@@ -29,7 +29,7 @@ def plot_eigvecs(N, V, nev):
 def plot_eigvals(Ns, V, nev):
     n = np.arange(1, nev+1)
     m = len(Ns)
-    fig, ax = plt.subplots(m, 2, figsize=(10, 6), sharex=True)
+    fig, ax = plt.subplots(m, 2, figsize=(12, 6), sharex=True)
     for i in range(m):
         N = Ns[i]
         l, v = get_eig(N, V, nev)
@@ -69,5 +69,5 @@ def plot_error(ns, N_max, V):
 
 plot_eigvecs(10, V, 3)
 plot_eigvecs(100, V, 3)
-plot_eigvals([20, 100, 1_000], V, 10)
+plot_eigvals([20, 1_000], V, 10)
 plot_error([1, 5, 8], 50, V)
