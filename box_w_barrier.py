@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import ceil, sqrt, pi
+from numpy import ceil, sqrt, pi, sin
 
 from plotting import *
 from utils import get_eig, roots, f, get_x, time_evolve, pade_step, euler_step, inner
@@ -39,10 +39,11 @@ def plot_eigvals(N, nev):
     l, v = get_eig(N, V, nev)
     n = np.arange(nev) + 1
 
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots(figsize=(8, 4))
     ax.plot(n, l, "o")
     ax.set_xlabel("$n$")
     ax.set_ylabel("$E / [2mL/\hbar^2]$")
+    plt.tight_layout()
     plt.savefig(FIG_PATH + "eigenvals.pdf")
 
 def plot_roots():
@@ -107,7 +108,7 @@ def plot_time_evolve(N):
     alpha = np.array([1, 1]) / sqrt(2)
     x = get_x(N)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(12, 4))
     ax.plot(x, V(x, V0), "k--")
     ax.set_ylabel("$E / [2mL/\hbar^2]$")
     ax.set_xlabel("$x / [L]$")
@@ -125,27 +126,35 @@ def plot_time_evolve(N):
     plt.tight_layout()
     plt.savefig(FIG_PATH + "time_evolve.pdf")
 
-def plot_time_evolve_step_error(Ns, step, dts):
-    fig, ax = plt.subplots()
-    ax.set_yscale("log")
-    for N in Ns:
-        n = 50
-        for dt in dts:
+def plot_time_evolve_step_error(Ns, step, dts, log_scale=True):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    if log_scale: ax.set_yscale("log")
+    for i, N in enumerate(Ns):
+        n = 70
+        for j, dt in enumerate(dts):
             l, v = get_eig(N, V, 1)
             v = v[:, 0]
             A = step(N, V, dt)
             a = np.empty(n, dtype=np.complex128)
             a[0] = inner(v, v)
-            for i in range(1, n):
+            for k in range(1, n):
                 v = A@v
-                a[i] = inner(v, v)
+                a[k] = inner(v, v)
 
-            print(2**(np.log(a[-1]- a[-2])/60-1))
+            ax.plot(
+                np.arange(n), a, 
+                label="$\Delta t / \Delta x^2={:.4f}$".format(dt*N**2), 
+                color=cm.viridis((i*2+j)/4)
+                )
 
-            ax.plot(np.arange(n), a, label="CFL={}".format(dt*N**2))
 
+    ax.set_xlabel("number of steps")
+    ax.set_ylabel("$\\langle \psi_n | \psi_n \\rangle $")
     ax.legend()
-    plt.show()
+    plt.tight_layout()
+    name = FIG_PATH + "step_error"
+    if log_scale: name += "log"
+    plt.savefig(name + ".pdf")
 
 def plot_time_evolve_step(N, step, f, T, dt):
     x = get_x(N)
@@ -162,17 +171,14 @@ def plot_time_evolve_step(N, step, f, T, dt):
             v = A@v
         ax.plot(x, v)
     plt.show()
-    
+
 
 nev = 8
 # plot_eigvecs(N, nev)
-
-# plot_eigvals(N, 12)
 # plot_roots()
+# plot_eigvals(N, 12)
 # plot_error([100, 1000, 10_000])
 
-# plot_superpos(N)
 # plot_time_evolve(N)
-# plot_time_evolve_step_error([1_000, 5_000], euler_step, [1e-6, 5e-6])
-# plot_time_evolve_step(1_000, pade_step, lambda x:-1/2*x**2+1/2*x, 1, 0.001)
-
+# plot_time_evolve_step_error([200, 1_000], euler_step, [1e-5, 4e-5])
+# plot_time_evolve_step_error([200, 1_000], pade_step, [1e-5, 4e-5], log_scale=False)

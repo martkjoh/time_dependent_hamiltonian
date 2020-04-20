@@ -96,7 +96,7 @@ def plot_prob():
 
 Vrs = np.linspace(-10, 10, 51)
 
-# plot_vecs(N, 0)
-# plot_diff_vals(N, Vrs)
+# plot_vecs(N, -100)
+plot_diff_vals(N, Vrs)
 # plot_H_eff_vecs(N, [-0.05])
-plot_prob()
+# plot_prob()
