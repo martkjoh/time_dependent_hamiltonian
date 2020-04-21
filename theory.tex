@@ -214,15 +214,22 @@
             V_r(t), & [2L/3, L).
         \end{cases}
     \end{equation*}
-    Lets look at the system with $V_r(t) = \tau \sin(\omega t)$. The exact solution of the interaction hamiltonian of the effective system
+    Lets look at the system with $V_r(t) = \tau \sin(\omega t)$, where $\tau \ll \epsilon_0 = E_2 - E_1$. We therefore assume that, if the particle starts out in a superposition of 2 states, it will stay so. Furthermore, the ground states, and thus alson $\epsilon_0$, are almost constant. We can thus write the full state as a linear combination of the two lowest states, 
     \begin{equation*}
-        \hat H(t) = 
-        \begin{pmatrix}
-            0 & \exp(-i \epsilon_0 t) \tau \sin(\omega t)\\
-            \exp(i \epsilon_0 t) \tau \sin(\omega t) & 0
-        \end{pmatrix}
+        \ket{\Psi(t)} = \sum_k a_k(t) \exp[-itE_k] \ket{k}, \quad \braket{x}{k} = \psi_k(x)
     \end{equation*}
-    is given by Volterra equation
+    We can then write $\hat H(t) = \hat H_0 + \hat H_1(t)$, and thus
+    \begin{align*}
+        -i\dv{t}\ket{\Psi(t)} 
+        & = -i\dot a_k(t)\exp[-itE_k]\ket{k} + a_k(t)E_k\exp[-itE_k]\ket{k} \\ 
+        & = a_k(t)\hat H_0\exp[-itE_k] \ket{k} + a_k(t)\hat H_1(t)\exp[-itE_k] \ket{k} \\
+        / -i\exp[itE_j]\bra{j} \cdot \implies \dot a_j(t) & = -i H_{jk} a_k(t)\exp[-it(E_j-E_k)], \quad H_{jk} = \bra{j} \hat H_1(t) \ket{k}.
+    \end{align*}
+    \dots
+
+    \dots
+    
+    \dots
     \begin{equation*}
         \ket{\psi(t)} = \ket{\psi(0)} - i\int_0^t \dd{t'} \hat H(t')\ket{\psi(t')}.
     \end{equation*}
