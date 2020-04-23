@@ -195,7 +195,7 @@
         \caption{Time evolution of $(\psi_1(x) - \psi_2(x))/\sqrt{2}$. It starts out on the right side, but after a time $T=\pi/(E_2-E_1)$, it has teleported over to the other side.}
     \end{figure}
 
-    \begin{figure}[ht]
+    \begin{figure}[!h]
         \centering
         \includegraphics[width=.49\textwidth]{box_w_barrier/step_errorlog.pdf}
         \includegraphics[width=.49\textwidth]{box_w_barrier/step_error.pdf}
@@ -214,28 +214,60 @@
             V_r(t), & [2L/3, L).
         \end{cases}
     \end{equation*}
-    Lets look at the system with $V_r(t) = \tau \sin(\omega t)$, where $\tau \ll \epsilon_0 = E_2 - E_1$. We therefore assume that, if the particle starts out in a superposition of 2 states, it will stay so. Furthermore, the ground states, and thus alson $\epsilon_0$, are almost constant. We can thus write the full state as a linear combination of the two lowest states, 
+    Lets look at the system with $V_r(t) = \tau \sin(\omega t)$, where $\tau \ll \epsilon_0 = E_2 - E_1$. We therefore assume that, if the particle starts out in a superposition of 2 states, it will stay so. Furthermore, the ground states, and thus alson $\epsilon_0$, are almost constant. We can thus write the full state as a linear combination of the two lowest states, $\ket{1}, \ket{2}$, e.g. $\ket{\Psi(t)} = \sum_k a_k(t) \exp[-itE_k] \ket{k}$. As these states span our new space, we also have the completness relation $I = \ketbra{1}{1} + \ketbra{2}{2}$. We can thus write $\hat H(t) = \hat H_0 + \hat H_1(t)$ in this basis,
+    \begin{align*}
+            I \hat H_0 I 
+            = \bra{1} \hat H_0 \ket{1} \ketbra{1}{1} + \bra{2} \hat H_0 \ket{2} \ketbra{2}{2} + \bra{1} \hat H_0 \ket{2} \ketbra{2}{1} + \bra{2} \hat H_0 \ket{1} \ketbra{1}{2} 
+            = \epsilon_0/2 (-\ketbra{1}{1} +\ketbra{2}{2}) \\
+            I \hat H_1 I
+            = \bra{1} \hat H_1 \ket{1} \ketbra{1}{1} + \bra{2} \hat H_1 \ket{2} \ketbra{2}{2} + \bra{1} \hat H_1 \ket{2} \ketbra{2}{1} + \bra{2} \hat H_1 \ket{1} \ketbra{1}{2} = V_r(t)(\ketbra{1}{2} + \ketbra{2}{1}).
+    \end{align*}
+    where we have change the zero point of the potential, and for some reason (?????????????????) that
     \begin{equation*}
-        \ket{\Psi(t)} = \sum_k a_k(t) \exp[-itE_k] \ket{k}, \quad \braket{x}{k} = \psi_k(x)
+        \bra{1} \hat H_1 \ket{1} =  \bra{2} \hat H_1 \ket{2} = 0, \bra{1} \hat H_1 \ket{2} = \bra{2} \hat H_1 \ket{1} = V_r(t).
     \end{equation*}
-    We can then write $\hat H(t) = \hat H_0 + \hat H_1(t)$, and thus
+    This means we can represent the system by an 2x2 matrix, 
+    \begin{equation*}
+        H(t) = H_0 + H_1(t), \quad
+        H_0 = 
+        \begin{pmatrix}
+            -\epsilon_0 / 2 & 0 \\
+            0 & \epsilon_0 / 2
+        \end{pmatrix}
+        , \quad
+        H_1(t) = 
+        \begin{pmatrix}
+            0 & \tau \sin(\omega t) \\
+            \tau \sin(\omega t) & 0.
+        \end{pmatrix}
+    \end{equation*}
+    Inserting this into the schrödinger equation gives
     \begin{align*}
         -i\dv{t}\ket{\Psi(t)} 
         & = -i\dot a_k(t)\exp[-itE_k]\ket{k} + a_k(t)E_k\exp[-itE_k]\ket{k} \\ 
-        & = a_k(t)\hat H_0\exp[-itE_k] \ket{k} + a_k(t)\hat H_1(t)\exp[-itE_k] \ket{k} \\
-        / -i\exp[itE_j]\bra{j} \cdot \implies \dot a_j(t) & = -i H_{jk} a_k(t)\exp[-it(E_j-E_k)], \quad H_{jk} = \bra{j} \hat H_1(t) \ket{k}.
+        & = a_k(t)H_0\exp[-itE_k] \ket{k} + a_k(t)H_1(t)\exp[-itE_k] \ket{k} \\
+        / -i\exp[itE_j]\bra{j} \cdot \implies \dot a_j(t) & = -i\exp[-it(E_j-E_k)]\bra{j} \hat H_1(t) \ket{k} a_k(t),
     \end{align*}
-    \dots
-
-    \dots
-    
-    \dots
+    or in matrix form, given a initial condition $\ket{\Psi(0)}$, 
     \begin{equation*}
-        \ket{\psi(t)} = \ket{\psi(0)} - i\int_0^t \dd{t'} \hat H(t')\ket{\psi(t')}.
+        \dv{t} \vec a(t) = -iM(t) \vec{a}, \quad M = \tau \sin(\omega t)
+        \begin{pmatrix}
+            0 & e^{-\epsilon_0 t} \\
+            e^{\epsilon_0 t} & 0
+        \end{pmatrix} 
+    \implies \ket{\Psi(t)} = \ket{\Psi(0)} - i\int_0^t \dd{t'} M(t')\ket{\Psi(t')}.
     \end{equation*}
-    This is discretizised as a sum,
+    This is discretizised as a sum, and solved iterativley.
     \begin{align*}
-        \psi_i^l = \psi_i^0 - i \Delta t \sum_{k=0}^{l} \sum_{j=1}^2 H_{ij}^k \psi_j^k, \implies A_{ij}^l \psi_j^l = b_i^l, \quad A_{ij}^l = \delta_{ij} + i\Delta t H_{ij}^l, \quad b_i = \psi_i^0 - i \Delta t \sum_{k=0}^{l-1} \sum_{j=1}^2 H_{ij}^k \psi_j^k.
+        \psi_i^l = \psi_i^0 - i \Delta t \sum_{k=0}^{l} \sum_{j=1}^2 M_{ij}^k \psi_j^k, \implies A_{ij}^l \psi_j^l = b_i^l, \quad A_{ij}^l = \delta_{ij} + i\Delta t M_{ij}^l, b_i = \psi_i^0 - i \Delta t \sum_{k=0}^{l-1} \sum_{j=1}^2 M_{ij}^k \psi_j^k.
     \end{align*}
+    In figure \ref{fig:rabi_osc} you can see the system evolve with different external frequanceis. Only for values cloes to $\omega=\epsilon_0=1$ will we get resonance, which leads to the system oscillationg between the eigenstates.
 
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{periodic_detuning/rabi_osc}
+        \caption{Time evolution of the system for different frequencies.}
+        \label{fig:rabi_osc}
+    \end{figure}
 \end{document}

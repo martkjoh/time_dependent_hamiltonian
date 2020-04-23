@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import ceil, sin
+from numpy import ceil, sin, sqrt
 from numpy.linalg import eig
 
 from plotting import *
@@ -23,14 +23,20 @@ def plot_vecs(N, Vr):
     x = get_x(N)
 
     fig, ax = plt.subplots()
-    ax.plot(x, v[:, 0])
-    ax.plot(x, v[:, 1])
+    v1 = v[:, 0]
+    v2 = v[:, 1]
+    print(inner(v1, V(x, Vr, 0)*v1))
+    print(inner(v2, V(x, Vr, 0)*v1))
+    print(inner(v2, V(x, Vr, 0)*v2))
+    print(inner(v1, V(x, Vr, 0)*v2))
+    ax.plot(x, v1)
+    ax.plot(x, v2)
     ax2 = ax.twinx()
     ax2.plot(x, V(x, Vr), "k--")
 
     y1 = np.max(abs(v))
     y2 = np.max(abs(V(x, Vr)))
-    ax.set_ylim(-y1*1.1, y1*1.1)
+    # ax.set_ylim(-y1*1.1, y1*1.1)
     ax2.set_ylim(-y2*1.1, y2*1.1)
     plt.plot()
     plt.show()
@@ -81,22 +87,39 @@ def plot_H_eff_vecs(N, Vrs):
     plt.show()
 
 def plot_prob():
-    N = 20_000
+    N = 10_000
     T = 1_000
     tau = 0.01
-
+    ws = [0.96, 0.98, 1., 1.01, 1.03]
     v0 = np.array([1, 0])
-    p = get_prob(v0, N, T, tau)
-
     t = np.linspace(0, T, N)
-    plt.plot(t, p)
-    plt.plot(t, 1-sin(t*tau/2)**2, "--k")
-    plt.show()
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+
+    for i, w, in enumerate(ws):
+        p = get_prob(v0, N, T, tau, w)
+
+        ax.plot(
+            t, p,
+            color=cm.viridis(i/len(ws)),
+            label="$\\omega = {}$".format(w)
+            )
+
+    ax.plot(
+        t, sin(t*tau/2)**2, "-.k", 
+        label="$\sin^2(t \\tau /2)$"
+        )
+    ax.set_xlabel("$t/[2mL^2/\\hbar]$")
+    ax.set_ylabel("$|a_1|^2$")
+
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(FIG_PATH + "rabi_osc.pdf")
 
 
 Vrs = np.linspace(-10, 10, 51)
 
-# plot_vecs(N, -100)
-plot_diff_vals(N, Vrs)
+# plot_vecs(N, 0.0001)
+# plot_diff_vals(N, Vrs)
 # plot_H_eff_vecs(N, [-0.05])
-# plot_prob()
+plot_prob()

@@ -99,9 +99,9 @@ def get_H_eff(N, l0, v0, V_Vr, Vr):
         [tau, eps/2]
     ])
 
-def get_HI(N, tau, T):
+def get_HI(N, T, tau, w):
     t = np.linspace(0, T, N)
-    a = tau*sin(t)
+    a = tau*sin(w*t)
     H = np.array([
         [np.zeros(N), exp(-1j*t)*a],
         [exp(+1j*t)*a, np.zeros(N)], 
@@ -119,14 +119,14 @@ def solve_psi(v0, N, H, dt):
 
     return v
 
-def get_psi_t(v0, N, T, tau):
+def get_psi_t(v0, N, T, tau, w):
     dt = T/N
-    H = get_HI(N, tau, T)
+    H = get_HI(N, T, tau, w, )
     return solve_psi(v0, N, H, dt)
 
-def get_prob(v0, N, T, tau):
-    v = get_psi_t(v0, N, T, tau)
+def get_prob(v0, N, T, tau, w):
+    v = get_psi_t(v0, N, T, tau, w)
     p = np.empty(N)
     for k in range(N):
-        p[k] = abs(inner(v0, v[k]))**2
+        p[k] = 1 - abs(inner(v0, v[k]))**2
     return p
